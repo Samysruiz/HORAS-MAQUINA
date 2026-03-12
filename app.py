@@ -174,13 +174,24 @@ if menu == "Registrar Horas":
         empresa = st.selectbox("Empresa", emp["empresa"])
 
         tipo = st.radio("Tipo registro",[
-            "Inicio/Fim",
-            "Meio dia (4h)",
-            "Dia todo (8h)"
-        ])
+elif tipo == "Meio dia (4h)":
 
-        data = st.date_input("Data", value=date.today())
+    horas_trab = 4
 
+    extra = st.time_input("Horas extras", value=time(0,0))
+
+    horas_trab += extra.hour + exinute/60tra.m
+
+
+elif tipo == "Dia todo (8h)":
+
+    horas_trab = 8
+
+    extra = st.time_input("Horas extras", value=time(0,0))
+
+    horas_trab += extra.hour + extra.minute/60
+
+        data = st.date_input("Data", value=date.today(), format="DD/MM/YYYY")
         horas_trab = 0
 
         if tipo == "Inicio/Fim":
