@@ -173,7 +173,7 @@ if menu == "Registrar Horas":
 
         empresa = st.selectbox("Empresa", emp["empresa"])
 
-        tipo = st.radio("Tipo registro",
+        tipo = st.radio("Tipo registro"),
 elif tipo == "Meio dia (4h)":
 
     horas_trab = 4
