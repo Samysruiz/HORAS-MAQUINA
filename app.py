@@ -164,112 +164,91 @@ if menu == "Empregadores":
                         st.rerun()
 # ---------------- REGISTRAR HORAS ----------------
 if menu == "Registrar Horas":
-
     if emp.empty:
         st.warning("Cadastre um cliente primeiro")
-
     else:
-
         empresa = st.selectbox("Empresa", emp["empresa"])
+        tipo = st.radio("Tipo registro", ["Inicio/Fim", "Meio dia (4h)", "Dia todo (8h)"])
+        data = st.date_input("Data", value=date.today(), format="DD/MM/YYYY")
+        horas_trab = 0
 
-        tipo = st.radio("Tipo registro", ["Inicio/Fim", "Meio dia (4h)", "Dia todo (8h)"])  # ✅ removed trailing comma, added options
-
-        data = st.date_input("Data", value=date.today(), format="DD/MM/YYYY")  # ✅ moved here so all branches can use it
-
-        horas_trab = 0  # ✅ initialize before the if/elif chain
-
-        if tipo == "Inicio/Fim":  # ✅ restored as if, not elif
-
+        if tipo == "Inicio/Fim":
             col1, col2 = st.columns(2)
-
             with col1:
-                h_ini = st.number_input("Hora início", 0, 23, 7)
-                m_ini = st.number_input("Minuto início", 0, 59, 0)
-
+                inicio = st.time_input("Início", value=time(7, 0))   # ✅ formato xx:xx
             with col2:
-                h_fim = st.number_input("Hora fim", 0, 23, 17)
-                m_fim = st.number_input("Minuto fim", 0, 59, 0)
-
-            inicio = time(h_ini, m_ini)
-            fim = time(h_fim, m_fim)
+                fim = st.time_input("Fim", value=time(17, 0))         # ✅ formato xx:xx
 
             if fim <= inicio:
-                st.error("Hora fim deve ser maior")
+                st.error("Hora fim deve ser maior que hora início")
             else:
                 diff = datetime.combine(data, fim) - datetime.combine(data, inicio)
                 horas_trab = diff.seconds / 3600
 
-        elif tipo == "Meio dia (4h)":  # ✅ kept as elif, removed duplicate block
+        elif tipo == "Meio dia (4h)":
             horas_trab = 4
             extra = st.time_input("Horas extras", value=time(0, 0))
             horas_trab += extra.hour + extra.minute / 60
 
-        elif tipo == "Dia todo (8h)":  # ✅ kept as elif, removed duplicate block + stray reset
+        elif tipo == "Dia todo (8h)":
             horas_trab = 8
             extra = st.time_input("Horas extras", value=time(0, 0))
             horas_trab += extra.hour + extra.minute / 60
 
-        st.success(f"Total: {horas_trab:.2f} horas")
+        # ✅ Exibe no formato Xh YYmin em vez de decimal
+        horas_exibir = int(horas_trab)
+        minutos_exibir = int((horas_trab - horas_exibir) * 60)
+        st.success(f"Total: {horas_exibir}h {minutos_exibir:02d}min")
 
         if st.button("Salvar horas"):
-
             valor_hora = emp.loc[emp["empresa"] == empresa, "valor_hora"].values[0]
-
             novo = pd.DataFrame([{
                 "empresa": empresa,
                 "data": data.strftime("%d/%m/%Y"),
-                "horas": horas_trab,
+                "horas": horas_trab,          # salva decimal para cálculos
                 "valor": horas_trab * valor_hora
             }])
-
             horas = pd.concat([horas, novo], ignore_index=True)
             horas.to_csv("horas.csv", index=False)
+            st.success("Horas registradas!")
 
-            st.success("Horas registradas!")  # ✅ removed stray ] at the end
 
 # ---------------- COBRAR HORAS ----------------
 if menu == "Cobrar Horas":
-
     if horas.empty:
         st.info("Nenhuma hora registrada")
-
     else:
-
         empresa = st.selectbox("Empresa", horas["empresa"].unique())
-
-        dados = horas[horas["empresa"]==empresa]
-
+        dados = horas[horas["empresa"] == empresa]
         st.dataframe(dados)
 
         total_h = dados["horas"].sum()
         total_v = dados["valor"].sum()
 
-        st.metric("Total horas", total_h)
+        # ✅ Exibe total de horas também no formato Xh YYmin
+        total_h_int = int(total_h)
+        total_min_int = int((total_h - total_h_int) * 60)
+
+        st.metric("Total horas", f"{total_h_int}h {total_min_int:02d}min")
         st.metric("Saldo", f"R$ {total_v:.2f}")
 
         if st.button("Somar e mandar"):
-
-            telefone = emp.loc[emp["empresa"]==empresa,"whats"].values[0]
-
+            telefone = emp.loc[emp["empresa"] == empresa, "whats"].values[0]
             mensagem = f"""
 🚜 *SANDRO BOBCAT*
 ━━━━━━━━━━━━━━━━━━
 🏢 *{empresa}*
 ━━━━━━━━━━━━━━━━━━
-⏱ Total horas: *{total_h}h*
+⏱ Total horas: *{total_h_int}h {total_min_int:02d}min*
 💰 Saldo: *R$ {total_v:.2f}*
 ━━━━━━━━━━━━━━━━━━
 🙏 Obrigado pelo serviço!
 """
-
-            cobradas = pd.concat([cobradas,dados], ignore_index=True)
+            cobradas = pd.concat([cobradas, dados], ignore_index=True)
             cobradas.to_csv("cobradas.csv", index=False)
-
             horas = horas.drop(dados.index)
             horas.to_csv("horas.csv", index=False)
-
             link = f"https://wa.me/{telefone}?text={urllib.parse.quote(mensagem)}"
-
             st.link_button("Enviar WhatsApp", link)
 
 # ---------------- MÉTRICAS ----------------
