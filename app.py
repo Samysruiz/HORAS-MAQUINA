@@ -167,9 +167,14 @@ if menu == "Empregadores":
                     st.session_state[f"editar_{i}"] = True
             with col3:
                 if st.button("apagar", key=f"del_{i}"):
+                    cliente = row["empresa"]
                     emp = emp.drop(i).reset_index(drop=True)
                     salvar_csv_github(emp, "empregadores.csv")
-                    st.success("Cliente removido")
+                    horas = horas[horas["empresa"] != cliente].reset_index(drop=True)
+                    salvar_csv_github(horas, "horas.csv")
+                    cobradas = cobradas[cobradas["empresa"] != cliente].reset_index(drop=True)
+                    salvar_csv_github(cobradas, "cobradas.csv")
+                    st.success(f"Cliente {cliente} removido!")
                     st.rerun()
 
             if st.session_state.get(f"editar_{i}"):
