@@ -71,7 +71,7 @@ if menu == "Empregadores":
     whats   = st.text_input("WhatsApp")
     valor   = st.number_input("Valor hora (R$)", min_value=0.0, value=120.0, step=0.5)
     if st.button("💾 Salvar"):
-    st.success("Salvo com sucesso!")
+     st.success("Salvo com sucesso!")
         novo = pd.DataFrame([{"empresa": empresa, "whats": whats, "valor_hora": valor}])
         emp  = pd.concat([emp, novo], ignore_index=True)
         emp.to_csv("empregadores.csv", index=False)
