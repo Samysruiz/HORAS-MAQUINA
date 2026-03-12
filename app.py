@@ -221,22 +221,20 @@ if menu == "Cobrar Horas":
         total_h = dados["horas"].sum()
         total_v = dados["valor"].sum()
 
-        # ✅ Exibe total de horas também no formato Xh YYmin
         total_h_int = int(total_h)
         total_min_int = int((total_h - total_h_int) * 60)
 
         st.metric("Total horas", f"{total_h_int}h {total_min_int:02d}min")
         st.metric("Saldo", f"R$ {total_v:.2f}")
 
-  if st.button("Somar e mandar"):
-    telefone = emp.loc[emp["empresa"] == empresa, "whats"].values[0]
+        if st.button("Somar e mandar"):
+            telefone = emp.loc[emp["empresa"] == empresa, "whats"].values[0]
 
-    # ✅ Pega a primeira e última data dos registros
-    datas = pd.to_datetime(dados["data"], format="%d/%m/%Y")
-    data_ini = datas.min().strftime("%d/%m/%Y")
-    data_fim = datas.max().strftime("%d/%m/%Y")
+            datas = pd.to_datetime(dados["data"], format="%d/%m/%Y")
+            data_ini = datas.min().strftime("%d/%m/%Y")
+            data_fim = datas.max().strftime("%d/%m/%Y")
 
-    mensagem = f"""
+            mensagem = f"""
 🚜 *SANDRO BOBCAT*
 ━━━━━━━━━━━━━━━━━━━━━━
 🏢 Cliente: *{empresa}*
@@ -248,12 +246,12 @@ if menu == "Cobrar Horas":
 ✅ Serviço concluído com qualidade!
 🤝 Obrigado pela confiança!
 """
-    cobradas = pd.concat([cobradas, dados], ignore_index=True)
-    cobradas.to_csv("cobradas.csv", index=False)
-    horas = horas.drop(dados.index)
-    horas.to_csv("horas.csv", index=False)
-    link = f"https://wa.me/{telefone}?text={urllib.parse.quote(mensagem)}"
-    st.link_button("Enviar WhatsApp", link)
+            cobradas = pd.concat([cobradas, dados], ignore_index=True)
+            cobradas.to_csv("cobradas.csv", index=False)
+            horas = horas.drop(dados.index)
+            horas.to_csv("horas.csv", index=False)
+            link = f"https://wa.me/{telefone}?text={urllib.parse.quote(mensagem)}"
+            st.link_button("Enviar WhatsApp", link)
 
 # ---------------- MÉTRICAS ----------------
 if menu == "Métricas":
