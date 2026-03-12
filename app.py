@@ -58,6 +58,8 @@ def get_logo():
         return ""
 
 LOGO_B64 = get_logo()
+if not LOGO_B64:
+    st.warning("Logo nao carregou - verifique o token e o arquivo LOGO.png")
 
 def show_logo(width=220, center=False):
     if not LOGO_B64:
