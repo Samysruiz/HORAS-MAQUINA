@@ -120,6 +120,9 @@ if menu == "Empregadores":
 
     if st.button("Salvar"):
 
+    if empresa in emp["empresa"].values:
+        st.warning("⚠️ Este cliente já está cadastrado!")
+    else:
         novo = pd.DataFrame([{
             "empresa":empresa,
             "whats":whats,
@@ -130,8 +133,7 @@ if menu == "Empregadores":
 
         emp.to_csv("empregadores.csv", index=False)
 
-        st.success("Empregador salvo!")
-
+        st.success("Cliente cadastrado!")
         st.rerun()
 
     st.markdown("---")
