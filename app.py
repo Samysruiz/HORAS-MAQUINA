@@ -5,7 +5,6 @@ import plotly.express as px
 import base64
 import os
 import urllib.parse
-
 from datetime import datetime, date, time
 
 # ---------------- LOGO ----------------
@@ -41,31 +40,25 @@ if "logado" not in st.session_state:
     st.session_state.logado = False
 
 if not st.session_state.logado:
-
     col1, col2, col3 = st.columns([1,2,1])
-
     with col2:
         show_logo(280, True)
         st.markdown("<h2 style='text-align:center;color:#E41E26;'>Sandro Bobcat</h2>", unsafe_allow_html=True)
-
-        usuario = st.text_input("Usuário")
+        usuario = st.text_input("Usuario")
         senha = st.text_input("Senha", type="password")
-
         if st.button("Entrar", use_container_width=True):
-
             if usuario.upper() == USUARIO and senha == SENHA:
                 st.session_state.logado = True
                 st.rerun()
             else:
-                st.error("Usuário ou senha incorretos")
-
+                st.error("Usuario ou senha incorretos")
     st.stop()
 
 # ---------------- APP ----------------
 show_logo()
 st.title("Sandro Bobcat")
 
-if st.button("🚪 Sair"):
+if st.button("Sair"):
     st.session_state.logado = False
     st.rerun()
 
@@ -83,36 +76,37 @@ horas = pd.read_csv("horas.csv")
 cobradas = pd.read_csv("cobradas.csv")
 
 menu = st.selectbox("", [
-"Registrar Horas",
-"Empregadores",
-"Cobrar Horas",
-"Métricas",
-"Arquivo"
+    "Registrar Horas",
+    "Empregadores",
+    "Cobrar Horas",
+    "Metricas",
+    "Arquivo"
 ])
+
+#-------------------EMOJIS----------------------
+TRUCK    = chr(0x1F69C)
+BUILDING = chr(0x1F3E2)
+CALENDAR = chr(0x1F4C5)
+TIMER    = chr(0x23F1)
+MONEY    = chr(0x1F4B0)
+CHECK    = chr(0x2705)
+HANDS    = chr(0x1F91D)
+LINE     = "\u2501" * 22
 
 # ---------------- EMPREGADORES ----------------
 if menu == "Empregadores":
-
     st.subheader("Cadastrar cliente")
-
     empresa = st.text_input("Empresa")
     whats = st.text_input("WhatsApp")
     valor = st.number_input("Valor hora (R$)", min_value=0.0, value=120.0)
 
     if st.button("Salvar"):
-
         if empresa in emp["empresa"].values:
-            st.warning("⚠️ Cliente já cadastrado!")
+            st.warning("Cliente ja cadastrado!")
         else:
-            novo = pd.DataFrame([{
-                "empresa":empresa,
-                "whats":whats,
-                "valor_hora":valor
-            }])
-
+            novo = pd.DataFrame([{"empresa":empresa,"whats":whats,"valor_hora":valor}])
             emp = pd.concat([emp,novo], ignore_index=True)
             emp.to_csv("empregadores.csv", index=False)
-
             st.success("Cliente cadastrado!")
             st.rerun()
 
@@ -121,48 +115,35 @@ if menu == "Empregadores":
 
     if emp.empty:
         st.info("Nenhum cliente cadastrado")
-
     else:
         for i, row in emp.iterrows():
-
             col1, col2, col3 = st.columns([4,1,1])
-
             with col1:
-                st.write(f"**{row['empresa']}** | 📞 {row['whats']} | R$ {row['valor_hora']}/h")
-
+                st.write(f"**{row['empresa']}** | {row['whats']} | R$ {row['valor_hora']}/h")
             with col2:
-                if st.button("✏️", key=f"edit_{i}"):
+                if st.button("editar", key=f"edit_{i}"):
                     st.session_state[f"editar_{i}"] = True
-
             with col3:
-                if st.button("🗑️", key=f"del_{i}"):
-
+                if st.button("apagar", key=f"del_{i}"):
                     emp = emp.drop(i).reset_index(drop=True)
                     emp.to_csv("empregadores.csv", index=False)
-
                     st.success("Cliente removido")
                     st.rerun()
 
             if st.session_state.get(f"editar_{i}"):
-
                 with st.form(key=f"form_{i}"):
-
                     nova_empresa = st.text_input("Empresa", value=row["empresa"])
                     novo_whats = st.text_input("WhatsApp", value=row["whats"])
                     novo_valor = st.number_input("Valor hora", value=float(row["valor_hora"]))
-
-                    if st.form_submit_button("Salvar edição"):
-
+                    if st.form_submit_button("Salvar edicao"):
                         emp.at[i,"empresa"] = nova_empresa
                         emp.at[i,"whats"] = novo_whats
                         emp.at[i,"valor_hora"] = novo_valor
-
                         emp.to_csv("empregadores.csv", index=False)
-
                         del st.session_state[f"editar_{i}"]
-
                         st.success("Cliente atualizado!")
                         st.rerun()
+
 # ---------------- REGISTRAR HORAS ----------------
 if menu == "Registrar Horas":
     if emp.empty:
@@ -176,11 +157,11 @@ if menu == "Registrar Horas":
         if tipo == "Inicio/Fim":
             col1, col2 = st.columns(2)
             with col1:
-                inicio = st.time_input("Início", value=time(7, 0))
+                inicio = st.time_input("Inicio", value=time(7, 0))
             with col2:
                 fim = st.time_input("Fim", value=time(17, 0))
             if fim <= inicio:
-                st.error("Hora fim deve ser maior que hora início")
+                st.error("Hora fim deve ser maior que hora inicio")
             else:
                 diff = datetime.combine(data, fim) - datetime.combine(data, inicio)
                 horas_trab = diff.seconds / 3600
@@ -210,15 +191,6 @@ if menu == "Registrar Horas":
             horas = pd.concat([horas, novo], ignore_index=True)
             horas.to_csv("horas.csv", index=False)
             st.success("Horas registradas!")
-#-------------------EMOJIS----------------------
-TRUCK    = chr(0x1F69C)
-BUILDING = chr(0x1F3E2)
-CALENDAR = chr(0x1F4C5)
-TIMER    = chr(0x23F1)
-MONEY    = chr(0x1F4B0)
-CHECK    = chr(0x2705)
-HANDS    = chr(0x1F91D)
-LINE     = "\u2501" * 22
 
 # ---------------- COBRAR HORAS ----------------
 if menu == "Cobrar Horas":
@@ -236,6 +208,10 @@ if menu == "Cobrar Horas":
 
         st.metric("Total horas", f"{total_h_int}h {total_min_int:02d}min")
         st.metric("Saldo", f"R$ {total_v:.2f}")
+
+        # ✅ TESTE — apague estas 2 linhas depois de confirmar
+        st.write("Teste emoji:", TRUCK)
+        st.write("Teste mensagem:", f"{TRUCK} Ola {BUILDING} {CHECK}")
 
         if st.button("Somar e mandar"):
             telefone = emp.loc[emp["empresa"] == empresa, "whats"].values[0]
@@ -260,31 +236,22 @@ if menu == "Cobrar Horas":
             cobradas.to_csv("cobradas.csv", index=False)
             horas = horas.drop(dados.index)
             horas.to_csv("horas.csv", index=False)
-            link = f"https://wa.me/{telefone}?text={urllib.parse.quote(mensagem)}"
-            st.link_button("Enviar WhatsApp", link)
-# ---------------- MÉTRICAS ----------------
-if menu == "Métricas":
 
+            link = f"https://wa.me/{telefone}?text={urllib.parse.quote(mensagem.encode('utf-8'), safe='~')}"
+            st.link_button("Enviar WhatsApp", link)
+
+# ---------------- METRICAS ----------------
+if menu == "Metricas":
     st.metric("Horas totais", cobradas["horas"].sum())
     st.metric("Saldo total", f"R$ {cobradas['valor'].sum():.2f}")
     st.metric("Clientes", emp.shape[0])
 
     if not cobradas.empty:
-
         graf = cobradas.groupby("empresa")["valor"].sum().reset_index()
-
-        fig = px.bar(
-            graf,
-            x="empresa",
-            y="valor",
-            title="Faturamento por cliente"
-        )
-
+        fig = px.bar(graf, x="empresa", y="valor", title="Faturamento por cliente")
         st.plotly_chart(fig)
 
-# ---------------- HISTÓRICO ----------------
+# ---------------- ARQUIVO ----------------
 if menu == "Arquivo":
-
-    st.subheader("Histórico de horas cobradas")
-
+    st.subheader("Historico de horas cobradas")
     st.dataframe(cobradas)
