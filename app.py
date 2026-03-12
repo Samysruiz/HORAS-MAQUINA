@@ -41,21 +41,34 @@ def salvar_csv_github(df, caminho):
 
 # ---------------- LOGO ----------------
 def get_logo():
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
-    r = requests.get(url, headers=headers)
-    if r.status_code == 200:
-        return r.json()["content"].replace("\n", "")
-    return ""
+    try:
+        url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png"
+        headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+        r = requests.get(url, headers=headers)
+        if r.status_code == 200:
+            return r.json()["content"].replace("\n", "")
+    except:
+        pass
+
+    # fallback: tenta ler local
+    try:
+        with open("LOGO.png", "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except:
+        return ""
 
 LOGO_B64 = get_logo()
 
 def show_logo(width=220, center=False):
+    if not LOGO_B64:
+        st.markdown("<h2 style='color:#E41E26;'>Sandro Bobcat</h2>", unsafe_allow_html=True)
+        return
     align = "center" if center else "left"
     st.markdown(
         f'<div style="text-align:{align};margin-bottom:8px">'
         f'<img src="data:image/png;base64,{LOGO_B64}" width="{width}px"></div>',
         unsafe_allow_html=True
+    )
     )
 
 # ---------------- ESTILO ----------------
