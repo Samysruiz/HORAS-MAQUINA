@@ -86,7 +86,7 @@ if menu == "Empregadores":
     st.subheader("Cadastrar empregador")
     empresa = st.text_input("Empresa")
     whats   = st.text_input("WhatsApp")
-    valor   = st.number_input("Valor hora", 120)
+    valor   = st.number_input("Valor hora",)
     if st.button("Salvar"):
         novo = pd.DataFrame([{"empresa": empresa, "whats": whats, "valor_hora": valor}])
         emp  = pd.concat([emp, novo])
