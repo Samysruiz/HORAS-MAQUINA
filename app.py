@@ -180,7 +180,7 @@ elif tipo == "Meio dia (4h)":
 
     extra = st.time_input("Horas extras", value=time(0,0))
 
-    horas_trab += extra.hour + exinute/60tra.m
+    horas_trab += extra.hour + extra.minute/60
 
 
 elif tipo == "Dia todo (8h)":
