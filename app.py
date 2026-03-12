@@ -16,7 +16,7 @@ GITHUB_REPO  = st.secrets["GITHUB_REPO"]
 BRANCH       = "principal"
 
 def ler_csv_github(caminho, colunas):
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png?ref={BRANCH}"
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{caminho}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
     r = requests.get(url, headers=headers)
     if r.status_code == 200:
@@ -42,7 +42,7 @@ def salvar_csv_github(df, caminho):
 # ---------------- LOGO ----------------
 def get_logo():
     try:
-        url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png"
+        url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png?ref={BRANCH}"
         headers = {"Authorization": f"token {GITHUB_TOKEN}"}
         r = requests.get(url, headers=headers)
         if r.status_code == 200:
