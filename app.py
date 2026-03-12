@@ -9,7 +9,7 @@ from datetime import datetime, date, time
 
 
 # ---------- LOGO ----------
-with open("logo.png", "rb") as f:
+with open("LOGO.png", "rb") as f:
     LOGO_B64 = base64.b64encode(f.read()).decode()
 
 
