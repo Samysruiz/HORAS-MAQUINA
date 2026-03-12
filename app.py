@@ -13,7 +13,7 @@ from datetime import datetime, date, time
 # ---------------- GITHUB ----------------
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 GITHUB_REPO  = st.secrets["GITHUB_REPO"]
-BRANCH       = "principal"
+BRANCH       = "main"
 
 def ler_csv_github(caminho, colunas):
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{caminho}?ref={BRANCH}"
