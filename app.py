@@ -175,10 +175,9 @@ if menu == "Registrar Horas":
         if tipo == "Inicio/Fim":
             col1, col2 = st.columns(2)
             with col1:
-                inicio = st.time_input("Início", value=time(7, 0))   # ✅ formato xx:xx
+                inicio = st.time_input("Início", value=time(7, 0))
             with col2:
-                fim = st.time_input("Fim", value=time(17, 0))         # ✅ formato xx:xx
-
+                fim = st.time_input("Fim", value=time(17, 0))
             if fim <= inicio:
                 st.error("Hora fim deve ser maior que hora início")
             else:
@@ -195,26 +194,21 @@ if menu == "Registrar Horas":
             extra = st.time_input("Horas extras", value=time(0, 0))
             horas_trab += extra.hour + extra.minute / 60
 
-        # ✅ Exibe no formato Xh YYmin em vez de decimal
         horas_exibir = int(horas_trab)
         minutos_exibir = int((horas_trab - horas_exibir) * 60)
-        horas_exibir = int(horas_trab)
-minutos_exibir = int((horas_trab - horas_exibir) * 60)
-st.success(f"Total: {horas_exibir}h {minutos_exibir:02d}min")
+        st.success(f"Total: {horas_exibir}h {minutos_exibir:02d}min")
 
         if st.button("Salvar horas"):
             valor_hora = emp.loc[emp["empresa"] == empresa, "valor_hora"].values[0]
             novo = pd.DataFrame([{
                 "empresa": empresa,
                 "data": data.strftime("%d/%m/%Y"),
-                "horas": horas_trab,          # salva decimal para cálculos
+                "horas": horas_trab,
                 "valor": horas_trab * valor_hora
             }])
             horas = pd.concat([horas, novo], ignore_index=True)
             horas.to_csv("horas.csv", index=False)
             st.success("Horas registradas!")
-
-
 # ---------------- COBRAR HORAS ----------------
 if menu == "Cobrar Horas":
     if horas.empty:
