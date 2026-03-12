@@ -220,7 +220,6 @@ if menu == "Cobrar Horas":
 
         total_h = dados["horas"].sum()
         total_v = dados["valor"].sum()
-
         total_h_int = int(total_h)
         total_min_int = int((total_h - total_h_int) * 60)
 
@@ -229,23 +228,22 @@ if menu == "Cobrar Horas":
 
         if st.button("Somar e mandar"):
             telefone = emp.loc[emp["empresa"] == empresa, "whats"].values[0]
-
             datas = pd.to_datetime(dados["data"], format="%d/%m/%Y")
             data_ini = datas.min().strftime("%d/%m/%Y")
             data_fim = datas.max().strftime("%d/%m/%Y")
-mensagem = (
-    "\U0001F69C *SANDRO BOBCAT*\n"
-    "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
-    f"\U0001F3E2 Cliente: *{empresa}*\n"
-    f"\U0001F4C5 Per\u00edodo: *{data_ini} a {data_fim}*\n"
-    "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
-    f"\u23F1 Horas trabalhadas: *{total_h_int}h {total_min_int:02d}min*\n"
-    f"\U0001F4B0 Valor a receber: *R$ {total_v:.2f}*\n"
-    "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
-    "\u2705 Servi\u00e7o conclu\u00eddo com qualidade!\n"
-    "\U0001F91D Obrigado pela confian\u00e7a!"
-)
 
+            mensagem = (
+                "\U0001F69C *SANDRO BOBCAT*\n"
+                "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
+                "\U0001F3E2 Cliente: *" + empresa + "*\n"
+                "\U0001F4C5 Per\u00edodo: *" + data_ini + " a " + data_fim + "*\n"
+                "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
+                "\u23F1 Horas trabalhadas: *" + str(total_h_int) + "h " + f"{total_min_int:02d}" + "min*\n"
+                "\U0001F4B0 Valor a receber: *R$ " + f"{total_v:.2f}" + "*\n"
+                "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
+                "\u2705 Servi\u00e7o conclu\u00eddo com qualidade!\n"
+                "\U0001F91D Obrigado pela confian\u00e7a!"
+            )
 
             cobradas = pd.concat([cobradas, dados], ignore_index=True)
             cobradas.to_csv("cobradas.csv", index=False)
