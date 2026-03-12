@@ -237,7 +237,7 @@ if menu == "Cobrar Horas":
             horas = horas.drop(dados.index)
             horas.to_csv("horas.csv", index=False)
 
-            link = f"https://wa.me/{telefone}?text={urllib.parse.quote(mensagem.encode('utf-8'), safe='~')}"
+            link = f"...{urllib.parse.quote(mensagem)}"
             st.link_button("Enviar WhatsApp", link)
 
 # ---------------- METRICAS ----------------
