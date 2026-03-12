@@ -217,16 +217,16 @@ if menu == "Cobrar Horas":
             data_fim = datas.max().strftime("%d/%m/%Y")
 
            mensagem = (
-           "*SANDRO BOBCAT*\n"
-           "--------------------\n"
-           f"Cliente: *{empresa}*\n"
-           f"Periodo: *{data_ini} a {data_fim}*\n"
-           "--------------------\n"
-           f"Horas: *{total_h_int}h {total_min_int:02d}min*\n"
-           f"Valor: *R$ {total_v:.2f}*\n"
-           "--------------------\n"
-           "Obrigado pela confianca!"
-        )
+                 "*SANDRO BOBCAT*\n"
+                 "--------------------\n"
+                 f"Cliente: *{empresa}*\n"
+                 f"Periodo: *{data_ini} a {data_fim}*\n"
+                 "--------------------\n"
+                 f"Horas: *{total_h_int}h {total_min_int:02d}min*\n"
+                 f"Valor: *R$ {total_v:.2f}*\n"
+                 "--------------------\n"
+                 "Obrigado pela confianca!"
+            )
 
             cobradas = pd.concat([cobradas, dados], ignore_index=True)
             cobradas.to_csv("cobradas.csv", index=False)
