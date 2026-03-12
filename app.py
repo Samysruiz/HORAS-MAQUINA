@@ -190,9 +190,10 @@ elif tipo == "Dia todo (8h)":
     extra = st.time_input("Horas extras", value=time(0,0))
 
     horas_trab += extra.hour + extra.minute/60
+    horas_trab = 0
 
-        data = st.date_input("Data", value=date.today(), format="DD/MM/YYYY")
-        horas_trab = 0
+    data = st.date_input("Data", value=date.today(), format="DD/MM/YYYY")
+     
 
         if tipo == "Inicio/Fim":
 
