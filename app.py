@@ -139,7 +139,7 @@ if menu == "Registrar Horas":
 
             # Botão pausa
             st.markdown("**Pausa (subtrair):**")
-            pausa_min = st.number_input("Minutos de pausa", min_value=0, value=0, step=5)
+            pausa_min = st.number_input("Minutos de pausa", min_value=0, value=120,0, step=5)
             horas_trab = max(0.0, horas_trab - pausa_min / 60)
 
             st.info(f"⏱️ Total: **{horas_trab:.2f} horas**")
