@@ -233,19 +233,33 @@ if menu == "Cobrar Horas":
             datas = pd.to_datetime(dados["data"], format="%d/%m/%Y")
             data_ini = datas.min().strftime("%d/%m/%Y")
             data_fim = datas.max().strftime("%d/%m/%Y")
+mensagem = (
+    "\U0001F69C *SANDRO BOBCAT*\n"
+    "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
+    f"\U0001F3E2 Cliente: *{empresa}*\n"
+    f"\U0001F4C5 Per\u00edodo: *{data_ini} a {data_fim}*\n"
+    "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
+    f"\u23F1 Horas trabalhadas: *{total_h_int}h {total_min_int:02d}min*\n"
+    f"\U0001F4B0 Valor a receber: *R$ {total_v:.2f}*\n"
+    "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
+    "\u2705 Servi\u00e7o conclu\u00eddo com qualidade!\n"
+    "\U0001F91D Obrigado pela confian\u00e7a!"
+)
 
-            mensagem = f"""
-🚜 *SANDRO BOBCAT*
-━━━━━━━━━━━━━━━━━━━━━━
-🏢 Cliente: *{empresa}*
-📅 Período: *{data_ini} a {data_fim}*
-━━━━━━━━━━━━━━━━━━━━━━
-⏱️ Horas trabalhadas: *{total_h_int}h {total_min_int:02d}min*
-💰 Valor a receber: *R$ {total_v:.2f}*
-━━━━━━━━━━━━━━━━━━━━━━
+```
+
+O resultado no WhatsApp vai ser:
+```
+🚜 SANDRO BOBCAT
+━━━━━━━━━━━━━━━━
+🏢 Cliente: samara ruiz silva
+📅 Período: 14/03 a 22/03/2026
+━━━━━━━━━━━━━━━━
+⏱ Horas trabalhadas: 10h 15min
+💰 Valor a receber: R$ 102.50
+━━━━━━━━━━━━━━━━
 ✅ Serviço concluído com qualidade!
 🤝 Obrigado pela confiança!
-"""
             cobradas = pd.concat([cobradas, dados], ignore_index=True)
             cobradas.to_csv("cobradas.csv", index=False)
             horas = horas.drop(dados.index)
