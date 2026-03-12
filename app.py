@@ -24,6 +24,7 @@ def ler_csv_github(caminho, colunas):
         return pd.read_csv(StringIO(conteudo))
     return pd.DataFrame(columns=colunas)
 
+# SUBSTITUA por isto:
 def salvar_csv_github(df, caminho):
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{caminho}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
@@ -37,7 +38,9 @@ def salvar_csv_github(df, caminho):
     }
     if sha:
         payload["sha"] = sha
-    requests.put(url, headers=headers, data=json.dumps(payload))
+    resp = requests.put(url, headers=headers, data=json.dumps(payload))
+    if resp.status_code not in [200, 201]:
+        st.error(f"Erro: {resp.status_code} - {resp.json().get('message', '')}")
 # ---------------- LOGO ----------------
 def get_logo():
     try:
