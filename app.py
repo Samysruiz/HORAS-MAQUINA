@@ -13,7 +13,7 @@ from datetime import datetime, date, time
 # ---------------- GITHUB ----------------
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 GITHUB_REPO  = st.secrets["GITHUB_REPO"]
-BRANCH       = "main"
+BRANCH       = "principal"
 
 def ler_csv_github(caminho, colunas):
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{caminho}"
@@ -59,7 +59,6 @@ LOGO_B64 = get_logo()
 
 def show_logo(width=220, center=False):
     if not LOGO_B64:
-        st.markdown("<h2 style='color:#E41E26;'>Sandro Bobcat</h2>", unsafe_allow_html=True)
         return
     align = "center" if center else "left"
     st.markdown(
