@@ -162,7 +162,6 @@ if menu == "Empregadores":
 
                         st.success("Cliente atualizado!")
                         st.rerun()
-
 # ---------------- REGISTRAR HORAS ----------------
 if menu == "Registrar Horas":
 
@@ -173,73 +172,60 @@ if menu == "Registrar Horas":
 
         empresa = st.selectbox("Empresa", emp["empresa"])
 
-        tipo = st.radio("Tipo registro"),
-elif tipo == "Meio dia (4h)":
+        tipo = st.radio("Tipo registro", ["Inicio/Fim", "Meio dia (4h)", "Dia todo (8h)"])  # ✅ removed trailing comma, added options
 
-    horas_trab = 4
+        data = st.date_input("Data", value=date.today(), format="DD/MM/YYYY")  # ✅ moved here so all branches can use it
 
-    extra = st.time_input("Horas extras", value=time(0,0))
+        horas_trab = 0  # ✅ initialize before the if/elif chain
 
-    horas_trab += extra.hour + extra.minute/60
-
-
-elif tipo == "Dia todo (8h)":
-
-    horas_trab = 8
-
-    extra = st.time_input("Horas extras", value=time(0,0))
-
-    horas_trab += extra.hour + extra.minute/60
-    horas_trab = 0
-
-    data = st.date_input("Data", value=date.today(), format="DD/MM/YYYY")
-     
-
-if tipo == "Inicio/Fim":
+        if tipo == "Inicio/Fim":  # ✅ restored as if, not elif
 
             col1, col2 = st.columns(2)
 
             with col1:
-                h_ini = st.number_input("Hora início",0,23,7)
-                m_ini = st.number_input("Minuto início",0,59,0)
+                h_ini = st.number_input("Hora início", 0, 23, 7)
+                m_ini = st.number_input("Minuto início", 0, 59, 0)
 
             with col2:
-                h_fim = st.number_input("Hora fim",0,23,17)
-                m_fim = st.number_input("Minuto fim",0,59,0)
+                h_fim = st.number_input("Hora fim", 0, 23, 17)
+                m_fim = st.number_input("Minuto fim", 0, 59, 0)
 
-            inicio = time(h_ini,m_ini)
-            fim = time(h_fim,m_fim)
+            inicio = time(h_ini, m_ini)
+            fim = time(h_fim, m_fim)
 
             if fim <= inicio:
                 st.error("Hora fim deve ser maior")
-
             else:
-                diff = datetime.combine(data,fim) - datetime.combine(data,inicio)
-                horas_trab = diff.seconds/3600
+                diff = datetime.combine(data, fim) - datetime.combine(data, inicio)
+                horas_trab = diff.seconds / 3600
 
-        elif tipo == "Meio dia (4h)":
+        elif tipo == "Meio dia (4h)":  # ✅ kept as elif, removed duplicate block
             horas_trab = 4
+            extra = st.time_input("Horas extras", value=time(0, 0))
+            horas_trab += extra.hour + extra.minute / 60
 
-        elif tipo == "Dia todo (8h)":
+        elif tipo == "Dia todo (8h)":  # ✅ kept as elif, removed duplicate block + stray reset
             horas_trab = 8
+            extra = st.time_input("Horas extras", value=time(0, 0))
+            horas_trab += extra.hour + extra.minute / 60
 
         st.success(f"Total: {horas_trab:.2f} horas")
 
         if st.button("Salvar horas"):
 
-            valor_hora = emp.loc[emp["empresa"]==empresa,"valor_hora"].values[0]
+            valor_hora = emp.loc[emp["empresa"] == empresa, "valor_hora"].values[0]
 
             novo = pd.DataFrame([{
-                "empresa":empresa,
-                "data":data.strftime("%d/%m/%Y"),
-                "horas":horas_trab,
-                "valor":horas_trab * valor_hora
+                "empresa": empresa,
+                "data": data.strftime("%d/%m/%Y"),
+                "horas": horas_trab,
+                "valor": horas_trab * valor_hora
             }])
 
-            horas = pd.concat([horas,novo], ignore_index=True)
+            horas = pd.concat([horas, novo], ignore_index=True)
             horas.to_csv("horas.csv", index=False)
 
-            st.success("Horas registradas!")
+            st.success("Horas registradas!")  # ✅ removed stray ] at the end
 
 # ---------------- COBRAR HORAS ----------------
 if menu == "Cobrar Horas":
