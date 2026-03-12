@@ -49,8 +49,6 @@ def get_logo():
             return r.json()["content"].replace("\n", "")
     except:
         pass
-
-    # fallback: tenta ler local
     try:
         with open("LOGO.png", "rb") as f:
             return base64.b64encode(f.read()).decode()
@@ -68,7 +66,6 @@ def show_logo(width=220, center=False):
         f'<div style="text-align:{align};margin-bottom:8px">'
         f'<img src="data:image/png;base64,{LOGO_B64}" width="{width}px"></div>',
         unsafe_allow_html=True
-    )
     )
 
 # ---------------- ESTILO ----------------
