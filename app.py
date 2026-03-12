@@ -246,21 +246,7 @@ mensagem = (
     "\U0001F91D Obrigado pela confian\u00e7a!"
 )
 
-```
 
-O resultado no WhatsApp vai ser:
-
-🚜 SANDRO BOBCAT
-━━━━━━━━━━━━━━━━
-🏢 Cliente: samara ruiz silva
-📅 Período: 14/03 a 22/03/2026
-━━━━━━━━━━━━━━━━
-⏱ Horas trabalhadas: 10h 15min
-💰 Valor a receber: R$ 102.50
-━━━━━━━━━━━━━━━━
-✅ Serviço concluído com qualidade!
-🤝 Obrigado pela confiança!
-```
             cobradas = pd.concat([cobradas, dados], ignore_index=True)
             cobradas.to_csv("cobradas.csv", index=False)
             horas = horas.drop(dados.index)
