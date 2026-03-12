@@ -211,14 +211,15 @@ if menu == "Registrar Horas":
             horas.to_csv("horas.csv", index=False)
             st.success("Horas registradas!")
 #-------------------EMOJIS----------------------
-TRUCK     = chr(0x1F69C)  # 🚜
-BUILDING  = chr(0x1F3E2)  # 🏢
-CALENDAR  = chr(0x1F4C5)  # 📅
-TIMER     = chr(0x23F1)   # ⏱️
-MONEY     = chr(0x1F4B0)  # 💰
-CHECK     = chr(0x2705)   # ✅
-HANDS     = chr(0x1F91D)  # 🤝
-LINE      = "\u2501" * 22
+TRUCK    = chr(0x1F69C)
+BUILDING = chr(0x1F3E2)
+CALENDAR = chr(0x1F4C5)
+TIMER    = chr(0x23F1)
+MONEY    = chr(0x1F4B0)
+CHECK    = chr(0x2705)
+HANDS    = chr(0x1F91D)
+LINE     = "\u2501" * 22
+
 # ---------------- COBRAR HORAS ----------------
 if menu == "Cobrar Horas":
     if horas.empty:
@@ -242,18 +243,18 @@ if menu == "Cobrar Horas":
             data_ini = datas.min().strftime("%d/%m/%Y")
             data_fim = datas.max().strftime("%d/%m/%Y")
 
-          mensagem = (
-            f"{TRUCK} *SANDRO BOBCAT*\n"
-            f"{LINE}\n"
-            f"{BUILDING} Cliente: *{empresa}*\n"
-            f"{CALENDAR} Período: *{data_ini} a {data_fim}*\n"
-            f"{LINE}\n"
-            f"{TIMER} Horas trabalhadas: *{total_h_int}h {total_min_int:02d}min*\n"
-            f"{MONEY} Valor a receber: *R$ {total_v:.2f}*\n"
-            f"{LINE}\n"
-            f"{CHECK} Serviço concluído com qualidade!\n"
-           f"{HANDS} Obrigado pela confiança!"
-               )
+            mensagem = (
+                f"{TRUCK} *SANDRO BOBCAT*\n"
+                f"{LINE}\n"
+                f"{BUILDING} Cliente: *{empresa}*\n"
+                f"{CALENDAR} Periodo: *{data_ini} a {data_fim}*\n"
+                f"{LINE}\n"
+                f"{TIMER} Horas trabalhadas: *{total_h_int}h {total_min_int:02d}min*\n"
+                f"{MONEY} Valor a receber: *R$ {total_v:.2f}*\n"
+                f"{LINE}\n"
+                f"{CHECK} Servico concluido com qualidade!\n"
+                f"{HANDS} Obrigado pela confianca!"
+            )
 
             cobradas = pd.concat([cobradas, dados], ignore_index=True)
             cobradas.to_csv("cobradas.csv", index=False)
@@ -261,7 +262,6 @@ if menu == "Cobrar Horas":
             horas.to_csv("horas.csv", index=False)
             link = f"https://wa.me/{telefone}?text={urllib.parse.quote(mensagem)}"
             st.link_button("Enviar WhatsApp", link)
-
 # ---------------- MÉTRICAS ----------------
 if menu == "Métricas":
 
