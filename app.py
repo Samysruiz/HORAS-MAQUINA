@@ -44,22 +44,18 @@ def salvar_csv_github(df, caminho):
 # ---------------- LOGO ----------------
 def get_logo():
     try:
-        url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png?ref={BRANCH}"
-        headers = {"Authorization": f"token {GITHUB_TOKEN}"}
-        r = requests.get(url, headers=headers)
+        url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{BRANCH}/LOGO.png"
+        r = requests.get(url)
         if r.status_code == 200:
-            return r.json()["content"].replace("\n", "")
+            return base64.b64encode(r.content).decode()
     except:
         pass
-    try:
-        with open("LOGO.png", "rb") as f:
-            return base64.b64encode(f.read()).decode()
-    except:
-        return ""
+    return ""
 
 LOGO_B64 = get_logo()
+
 if not LOGO_B64:
-    st.warning("Logo nao carregou - verifique o token e o arquivo LOGO.png")
+    st.warning("Logo nao carregou - verifique se LOGO.png esta no repositorio")
 
 def show_logo(width=220, center=False):
     if not LOGO_B64:
