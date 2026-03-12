@@ -210,6 +210,15 @@ if menu == "Registrar Horas":
             horas = pd.concat([horas, novo], ignore_index=True)
             horas.to_csv("horas.csv", index=False)
             st.success("Horas registradas!")
+#-------------------EMOJIS----------------------
+TRUCK     = chr(0x1F69C)  # 🚜
+BUILDING  = chr(0x1F3E2)  # 🏢
+CALENDAR  = chr(0x1F4C5)  # 📅
+TIMER     = chr(0x23F1)   # ⏱️
+MONEY     = chr(0x1F4B0)  # 💰
+CHECK     = chr(0x2705)   # ✅
+HANDS     = chr(0x1F91D)  # 🤝
+LINE      = "\u2501" * 22
 # ---------------- COBRAR HORAS ----------------
 if menu == "Cobrar Horas":
     if horas.empty:
@@ -233,18 +242,18 @@ if menu == "Cobrar Horas":
             data_ini = datas.min().strftime("%d/%m/%Y")
             data_fim = datas.max().strftime("%d/%m/%Y")
 
-            mensagem = (
-                "\U0001F69C *SANDRO BOBCAT*\n"
-                "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
-                "\U0001F3E2 Cliente: *" + empresa + "*\n"
-                "\U0001F4C5 Per\u00edodo: *" + data_ini + " a " + data_fim + "*\n"
-                "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
-                "\u23F1 Horas trabalhadas: *" + str(total_h_int) + "h " + f"{total_min_int:02d}" + "min*\n"
-                "\U0001F4B0 Valor a receber: *R$ " + f"{total_v:.2f}" + "*\n"
-                "\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
-                "\u2705 Servi\u00e7o conclu\u00eddo com qualidade!\n"
-                "\U0001F91D Obrigado pela confian\u00e7a!"
-            )
+          mensagem = (
+            f"{TRUCK} *SANDRO BOBCAT*\n"
+            f"{LINE}\n"
+            f"{BUILDING} Cliente: *{empresa}*\n"
+            f"{CALENDAR} Período: *{data_ini} a {data_fim}*\n"
+            f"{LINE}\n"
+            f"{TIMER} Horas trabalhadas: *{total_h_int}h {total_min_int:02d}min*\n"
+            f"{MONEY} Valor a receber: *R$ {total_v:.2f}*\n"
+            f"{LINE}\n"
+            f"{CHECK} Serviço concluído com qualidade!\n"
+           f"{HANDS} Obrigado pela confiança!"
+               )
 
             cobradas = pd.concat([cobradas, dados], ignore_index=True)
             cobradas.to_csv("cobradas.csv", index=False)
