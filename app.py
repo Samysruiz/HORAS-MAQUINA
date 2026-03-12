@@ -249,7 +249,7 @@ mensagem = (
 ```
 
 O resultado no WhatsApp vai ser:
-```
+
 🚜 SANDRO BOBCAT
 ━━━━━━━━━━━━━━━━
 🏢 Cliente: samara ruiz silva
@@ -260,6 +260,7 @@ O resultado no WhatsApp vai ser:
 ━━━━━━━━━━━━━━━━
 ✅ Serviço concluído com qualidade!
 🤝 Obrigado pela confiança!
+```
             cobradas = pd.concat([cobradas, dados], ignore_index=True)
             cobradas.to_csv("cobradas.csv", index=False)
             horas = horas.drop(dados.index)
