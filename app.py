@@ -5,11 +5,50 @@ import plotly.express as px
 import base64
 import os
 import urllib.parse
+import requests
+import json
+from io import StringIO
 from datetime import datetime, date, time
 
+# ---------------- GITHUB ----------------
+GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
+GITHUB_REPO  = st.secrets["GITHUB_REPO"]
+BRANCH       = "main"
+
+def ler_csv_github(caminho, colunas):
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{caminho}"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    r = requests.get(url, headers=headers)
+    if r.status_code == 200:
+        conteudo = base64.b64decode(r.json()["content"]).decode()
+        return pd.read_csv(StringIO(conteudo))
+    return pd.DataFrame(columns=colunas)
+
+def salvar_csv_github(df, caminho):
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{caminho}"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    conteudo = base64.b64encode(df.to_csv(index=False).encode()).decode()
+    r = requests.get(url, headers=headers)
+    sha = r.json().get("sha", "") if r.status_code == 200 else ""
+    payload = {
+        "message": f"update {caminho}",
+        "content": conteudo,
+        "branch": BRANCH
+    }
+    if sha:
+        payload["sha"] = sha
+    requests.put(url, headers=headers, data=json.dumps(payload))
+
 # ---------------- LOGO ----------------
-with open("LOGO.png", "rb") as f:
-    LOGO_B64 = base64.b64encode(f.read()).decode()
+def get_logo():
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    r = requests.get(url, headers=headers)
+    if r.status_code == 200:
+        return r.json()["content"].replace("\n", "")
+    return ""
+
+LOGO_B64 = get_logo()
 
 def show_logo(width=220, center=False):
     align = "center" if center else "left"
@@ -63,17 +102,9 @@ if st.button("Sair"):
     st.rerun()
 
 # ---------------- ARQUIVOS ----------------
-def criar(nome, colunas):
-    if not os.path.exists(nome):
-        pd.DataFrame(columns=colunas).to_csv(nome, index=False)
-
-criar("empregadores.csv", ["empresa","whats","valor_hora"])
-criar("horas.csv", ["empresa","data","horas","valor"])
-criar("cobradas.csv", ["empresa","data","horas","valor"])
-
-emp = pd.read_csv("empregadores.csv")
-horas = pd.read_csv("horas.csv")
-cobradas = pd.read_csv("cobradas.csv")
+emp      = ler_csv_github("empregadores.csv", ["empresa","whats","valor_hora"])
+horas    = ler_csv_github("horas.csv", ["empresa","data","horas","valor"])
+cobradas = ler_csv_github("cobradas.csv", ["empresa","data","horas","valor"])
 
 menu = st.selectbox("", [
     "Registrar Horas",
@@ -83,7 +114,7 @@ menu = st.selectbox("", [
     "Arquivo"
 ])
 
-#-------------------EMOJIS----------------------
+# ---------------- EMOJIS ----------------
 TRUCK    = chr(0x1F69C)
 BUILDING = chr(0x1F3E2)
 CALENDAR = chr(0x1F4C5)
@@ -106,7 +137,7 @@ if menu == "Empregadores":
         else:
             novo = pd.DataFrame([{"empresa":empresa,"whats":whats,"valor_hora":valor}])
             emp = pd.concat([emp,novo], ignore_index=True)
-            emp.to_csv("empregadores.csv", index=False)
+            salvar_csv_github(emp, "empregadores.csv")
             st.success("Cliente cadastrado!")
             st.rerun()
 
@@ -126,7 +157,7 @@ if menu == "Empregadores":
             with col3:
                 if st.button("apagar", key=f"del_{i}"):
                     emp = emp.drop(i).reset_index(drop=True)
-                    emp.to_csv("empregadores.csv", index=False)
+                    salvar_csv_github(emp, "empregadores.csv")
                     st.success("Cliente removido")
                     st.rerun()
 
@@ -139,7 +170,7 @@ if menu == "Empregadores":
                         emp.at[i,"empresa"] = nova_empresa
                         emp.at[i,"whats"] = novo_whats
                         emp.at[i,"valor_hora"] = novo_valor
-                        emp.to_csv("empregadores.csv", index=False)
+                        salvar_csv_github(emp, "empregadores.csv")
                         del st.session_state[f"editar_{i}"]
                         st.success("Cliente atualizado!")
                         st.rerun()
@@ -189,7 +220,7 @@ if menu == "Registrar Horas":
                 "valor": horas_trab * valor_hora
             }])
             horas = pd.concat([horas, novo], ignore_index=True)
-            horas.to_csv("horas.csv", index=False)
+            salvar_csv_github(horas, "horas.csv")
             st.success("Horas registradas!")
 
 # ---------------- COBRAR HORAS ----------------
@@ -208,7 +239,6 @@ if menu == "Cobrar Horas":
 
         st.metric("Total horas", f"{total_h_int}h {total_min_int:02d}min")
         st.metric("Saldo", f"R$ {total_v:.2f}")
-
 
         if st.button("Somar e mandar"):
             telefone = emp.loc[emp["empresa"] == empresa, "whats"].values[0]
@@ -229,11 +259,13 @@ if menu == "Cobrar Horas":
             )
 
             cobradas = pd.concat([cobradas, dados], ignore_index=True)
-            cobradas.to_csv("cobradas.csv", index=False)
+            salvar_csv_github(cobradas, "cobradas.csv")
             horas = horas.drop(dados.index)
-            horas.to_csv("horas.csv", index=False)
+            salvar_csv_github(horas, "horas.csv")
+
             link = f"https://wa.me/{telefone}?text={urllib.parse.quote(mensagem)}"
             st.link_button("Enviar WhatsApp", link)
+
 # ---------------- METRICAS ----------------
 if menu == "Metricas":
     st.metric("Horas totais", cobradas["horas"].sum())
