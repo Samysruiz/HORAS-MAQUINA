@@ -28,7 +28,7 @@ def salvar_csv_github(df, caminho):
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{caminho}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
     conteudo = base64.b64encode(df.to_csv(index=False).encode()).decode()
-       r = requests.get(url+f"?ref={BRANCH}",headers=headers)
+    r = requests.get(url+f"?ref={BRANCH}",headers=headers)
     sha = r.json().get("sha", "") if r.status_code == 200 else ""
     payload = {
         "message": f"update {caminho}",
