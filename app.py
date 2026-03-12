@@ -188,21 +188,14 @@ if menu == "Cobrar Horas":
         st.metric("Saldo", f"R$ {total_v:,.2f}")
         if st.button("📤 Somar e mandar"):
             telefone = emp.loc[emp["empresa"] == empresa, "whats"].values[0]
-            mensagem =f"""
-🚜 *SANDRO BOBCAT*
-
-📄 Relatório de Serviço
-
-🏢 Empresa: {empresa}
-📅 Data: {data}
-
-⏱ Total de horas: {total_h}h
-💰 Valor: R$ {total_v}
-
-Obrigado por utilizar nossos serviços!
-
-👷 Sandro Bobcat
-""""
+            mensagem = f"""🚜 *SANDRO BOBCAT*
+                       📄 Relatório de Serviço
+                       🏢 Empresa: {empresa}
+                       📅 Data: {data}
+                       ⏱ Total de horas: {total_h}h
+                       💰 Saldo do serviço: R$ {total_v}
+                       🙏 Obrigado por utilizar nossos serviços!
+                       👷 Sandro Bobcat"""
             cobradas = pd.concat([cobradas, dados], ignore_index=True)
             cobradas.to_csv("cobradas.csv", index=False)
             horas = horas.drop(dados.index).reset_index(drop=True)
