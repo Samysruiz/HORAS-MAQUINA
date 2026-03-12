@@ -1,6 +1,18 @@
+import streamlit as st
+import base64
+
+with open("logo.png", "rb") as f:
+    LOGO_B64 = base64.b64encode(f.read()).decode()
+
 st.markdown("""
 <style>
-.stButton>button{background-color:#E41E26;color:white;border-radius:8px;height:45px;font-weight:bold;}
+.stButton>button{
+background-color:#E41E26;
+color:white;
+border-radius:8px;
+height:45px;
+font-weight:bold;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -9,6 +21,7 @@ def show_logo(width=220, center=False):
     st.markdown(
         f'<div style="text-align:{align};margin-bottom:8px"><img src="data:image/png;base64,{LOGO_B64}" width="{width}px"></div>',
         unsafe_allow_html=True
+    )
     )
 
 USUARIO = "SANDRO"
