@@ -195,7 +195,7 @@ elif tipo == "Dia todo (8h)":
     data = st.date_input("Data", value=date.today(), format="DD/MM/YYYY")
      
 
-        if tipo == "Inicio/Fim":
+if tipo == "Inicio/Fim":
 
             col1, col2 = st.columns(2)
 
