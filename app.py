@@ -210,7 +210,7 @@ if menu == "Cobrar Horas":
         st.metric("Saldo", f"R$ {total_v:.2f}")
 
 
-       if st.button("Somar e mandar"):
+        if st.button("Somar e mandar"):
             telefone = emp.loc[emp["empresa"] == empresa, "whats"].values[0]
             datas = pd.to_datetime(dados["data"], format="%d/%m/%Y")
             data_ini = datas.min().strftime("%d/%m/%Y")
