@@ -21,7 +21,7 @@ def show_logo(width=220, center=False):
     st.markdown(
         f'<div style="text-align:{align};margin-bottom:8px"><img src="data:image/png;base64,{LOGO_B64}" width="{width}px"></div>',
         unsafe_allow_html=True
-    )
+    
     )
 
 USUARIO = "SANDRO"
