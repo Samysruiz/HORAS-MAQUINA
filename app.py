@@ -209,9 +209,6 @@ if menu == "Cobrar Horas":
         st.metric("Total horas", f"{total_h_int}h {total_min_int:02d}min")
         st.metric("Saldo", f"R$ {total_v:.2f}")
 
-        # ✅ TESTE — apague estas 2 linhas depois de confirmar
-        st.write("Teste emoji:", TRUCK)
-        st.write("Teste mensagem:", f"{TRUCK} Ola {BUILDING} {CHECK}")
 
         if st.button("Somar e mandar"):
             telefone = emp.loc[emp["empresa"] == empresa, "whats"].values[0]
