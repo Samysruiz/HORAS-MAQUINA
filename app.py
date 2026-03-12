@@ -198,7 +198,9 @@ if menu == "Registrar Horas":
         # ✅ Exibe no formato Xh YYmin em vez de decimal
         horas_exibir = int(horas_trab)
         minutos_exibir = int((horas_trab - horas_exibir) * 60)
-        st.success(f"Total: {horas_exibir}h {minutos_exibir:02d}min")
+        horas_exibir = int(horas_trab)
+minutos_exibir = int((horas_trab - horas_exibir) * 60)
+st.success(f"Total: {horas_exibir}h {minutos_exibir:02d}min")
 
         if st.button("Salvar horas"):
             valor_hora = emp.loc[emp["empresa"] == empresa, "valor_hora"].values[0]
