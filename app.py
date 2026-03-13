@@ -40,7 +40,6 @@ def salvar_csv_github(df, caminho):
     resp = requests.put(url, headers=headers, data=json.dumps(payload))
     if resp.status_code not in [200, 201]:
         st.error(f"Erro: {resp.status_code} - {resp.json().get('message', '')}")
-
 # ---------------- LOGO ----------------
 def get_logo():
     try:
@@ -48,22 +47,13 @@ def get_logo():
         headers = {"Authorization": f"token {GITHUB_TOKEN}"}
         r = requests.get(url, headers=headers)
         if r.status_code == 200:
-            return r.json()["content"].replace("\n", "")
+            download_url = r.json().get("download_url")
+            img = requests.get(download_url)
+            return base64.b64encode(img.content).decode()
     except:
         pass
-    try:
-        with open("LOGO.png", "rb") as f:
-            return base64.b64encode(f.read()).decode()
-    except:
-        return ""
-LOGO_B64 = get_logo()
+    return ""
 
-r_teste = requests.get(
-    f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png?ref={BRANCH}",
-    headers={"Authorization": f"token {GITHUB_TOKEN}"}
-)
-st.write(r_teste.status_code)
-st.write(r_teste.json())
 LOGO_B64 = get_logo()
 
 def show_logo(width=220, center=False):
@@ -75,7 +65,6 @@ def show_logo(width=220, center=False):
         f'<img src="data:image/png;base64,{LOGO_B64}" width="{width}px"></div>',
         unsafe_allow_html=True
     )
-
 # ---------------- ESTILO ----------------
 st.markdown("""
 <style>
