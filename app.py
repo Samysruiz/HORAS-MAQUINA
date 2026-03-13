@@ -40,7 +40,8 @@ def salvar_csv_github(df, caminho):
     resp = requests.put(url, headers=headers, data=json.dumps(payload))
     if resp.status_code not in [200, 201]:
         st.error(f"Erro: {resp.status_code} - {resp.json().get('message', '')}")
-# ---------------- LOGO ----------------
+
+# ---------------- LOGO ----------------  ✅ corrigido para arquivos grandes
 def get_logo():
     try:
         url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png?ref={BRANCH}"
@@ -65,6 +66,7 @@ def show_logo(width=220, center=False):
         f'<img src="data:image/png;base64,{LOGO_B64}" width="{width}px"></div>',
         unsafe_allow_html=True
     )
+
 # ---------------- ESTILO ----------------
 st.markdown("""
 <style>
@@ -77,6 +79,16 @@ st.markdown("""
 }
 section[data-testid="stSidebar"] .stButton>button{
     height:35px;
+}
+.salvo{
+    font-size:2.5rem;
+    font-weight:bold;
+    color:#1a7a1a;
+    text-align:center;
+    padding:20px;
+    border:3px solid #1a7a1a;
+    border-radius:12px;
+    margin:10px 0;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -103,7 +115,7 @@ if not st.session_state.logado:
                 st.error("Usuario ou senha incorretos")
     st.stop()
 
-# ---------------- SIDEBAR ----------------  ✅ menu lateral
+# ---------------- SIDEBAR ----------------
 with st.sidebar:
     show_logo(160, True)
     st.markdown("---")
@@ -138,7 +150,7 @@ LINE     = "\u2501" * 22
 if menu == "Empregadores":
     st.title("Empregadores")
 
-    with st.container(border=True):  # ✅ container com borda
+    with st.container(border=True):
         st.subheader("Cadastrar cliente")
         empresa = st.text_input("Empresa")
         whats = st.text_input("WhatsApp")
@@ -151,7 +163,7 @@ if menu == "Empregadores":
                 novo = pd.DataFrame([{"empresa":empresa,"whats":whats,"valor_hora":valor}])
                 emp = pd.concat([emp,novo], ignore_index=True)
                 salvar_csv_github(emp, "empregadores.csv")
-                st.toast("Cliente cadastrado!", icon="✅")  # ✅ toast
+                st.toast("Cliente cadastrado!", icon="✅")
                 st.rerun()
 
     st.markdown("---")
@@ -161,7 +173,7 @@ if menu == "Empregadores":
         st.info("Nenhum cliente cadastrado")
     else:
         for i, row in emp.iterrows():
-            with st.container(border=True):  # ✅ container por cliente
+            with st.container(border=True):
                 col1, col2, col3 = st.columns([4,1,1])
                 with col1:
                     st.write(f"**{row['empresa']}** | {row['whats']} | R$ {row['valor_hora']}/h")
@@ -201,22 +213,22 @@ if menu == "Registrar Horas":
     if emp.empty:
         st.warning("Cadastre um cliente primeiro")
     else:
-        with st.container(border=True):  # ✅ container com borda
+        with st.container(border=True):
             empresa = st.selectbox("Empresa", emp["empresa"])
-
-            col1, col2 = st.columns(2)  # ✅ colunas lado a lado
+            col1, col2 = st.columns(2)
             with col1:
                 tipo = st.radio(
                     "Tipo registro",
                     ["Inicio/Fim", "Meio dia (4h)", "Dia todo (8h)"],
-                    horizontal=True  # ✅ radio horizontal
+                    horizontal=True
                 )
             with col2:
-                data = st.date_input("Data", value=date.today(), format="DD/MM/YYYY")
+                data = date.today()
+                st.info(f"Data: **{data.strftime('%d/%m/%Y')}** (somente hoje)")
 
         horas_trab = 0
 
-        with st.container(border=True):  # ✅ container para horas
+        with st.container(border=True):
             if tipo == "Inicio/Fim":
                 col1, col2 = st.columns(2)
                 with col1:
@@ -243,17 +255,50 @@ if menu == "Registrar Horas":
             minutos_exibir = int((horas_trab - horas_exibir) * 60)
             st.success(f"Total: {horas_exibir}h {minutos_exibir:02d}min")
 
-            if st.button("Salvar horas", use_container_width=True):
-                valor_hora = emp.loc[emp["empresa"] == empresa, "valor_hora"].values[0]
-                novo = pd.DataFrame([{
-                    "empresa": empresa,
-                    "data": data.strftime("%d/%m/%Y"),
-                    "horas": horas_trab,
-                    "valor": horas_trab * valor_hora
-                }])
-                horas = pd.concat([horas, novo], ignore_index=True)
-                salvar_csv_github(horas, "horas.csv")
-                st.toast("Horas registradas!", icon="✅")  # ✅ toast
+            data_str = data.strftime("%d/%m/%Y")
+            ja_registrado = (
+                not horas.empty and
+                ((horas["empresa"] == empresa) & (horas["data"] == data_str)).any()
+            )
+
+            if ja_registrado:
+                st.error(f"Voce ja trabalhou para {empresa} hoje! Edite no Arquivo se precisar corrigir.")
+            else:
+                if st.button("Salvar horas", use_container_width=True):
+                    st.session_state["confirmar"] = True
+
+            if st.session_state.get("confirmar") and not ja_registrado:
+                st.warning(
+                    f"Confirma salvar **{horas_exibir}h {minutos_exibir:02d}min** "
+                    f"para **{empresa}** no dia **{data_str}**?"
+                )
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Sim, salvar", use_container_width=True):
+                        valor_hora = emp.loc[emp["empresa"] == empresa, "valor_hora"].values[0]
+                        novo = pd.DataFrame([{
+                            "empresa": empresa,
+                            "data": data_str,
+                            "horas": horas_trab,
+                            "valor": horas_trab * valor_hora
+                        }])
+                        horas = pd.concat([horas, novo], ignore_index=True)
+                        salvar_csv_github(horas, "horas.csv")
+                        st.session_state["confirmar"] = False
+                        st.session_state["salvo"] = True
+                        st.rerun()
+                with col2:
+                    if st.button("Cancelar", use_container_width=True):
+                        st.session_state["confirmar"] = False
+                        st.rerun()
+
+        if st.session_state.get("salvo"):
+            st.markdown(
+                '<div class="salvo">HORAS SALVAS COM SUCESSO!</div>',
+                unsafe_allow_html=True
+            )
+            st.balloons()
+            st.session_state["salvo"] = False
 
 # ---------------- COBRAR HORAS ----------------
 if menu == "Cobrar Horas":
@@ -263,10 +308,25 @@ if menu == "Cobrar Horas":
         st.info("Nenhuma hora registrada")
     else:
         empresa = st.selectbox("Empresa", horas["empresa"].unique())
-        dados = horas[horas["empresa"] == empresa]
+        dados = horas[horas["empresa"] == empresa].copy()
+        dados_reset = dados.reset_index()
 
-        with st.container(border=True):  # ✅ container resumo
-            st.dataframe(dados, use_container_width=True)
+        with st.container(border=True):
+            selecionados = st.dataframe(
+                dados_reset[["data","horas","valor"]],
+                use_container_width=True,
+                on_select="rerun",
+                selection_mode="multi-row"
+            )
+
+            if selecionados.selection.rows:
+                if st.button("Apagar selecionados", use_container_width=True):
+                    indices = dados_reset.iloc[selecionados.selection.rows]["index"].tolist()
+                    horas = horas.drop(indices).reset_index(drop=True)
+                    salvar_csv_github(horas, "horas.csv")
+                    st.toast("Registros apagados!", icon="🗑️")
+                    st.rerun()
+
             total_h = dados["horas"].sum()
             total_v = dados["valor"].sum()
             total_h_int = int(total_h)
@@ -324,6 +384,54 @@ if menu == "Metricas":
 
 # ---------------- ARQUIVO ----------------
 if menu == "Arquivo":
-    st.title("Historico")
-    with st.container(border=True):
+    st.title("Arquivo")
+
+    st.subheader("Horas pendentes")
+    if horas.empty:
+        st.info("Nenhuma hora pendente")
+    else:
+        for i, row in horas.iterrows():
+            with st.container(border=True):
+                col1, col2, col3 = st.columns([4,1,1])
+                with col1:
+                    h_int = int(row["horas"])
+                    m_int = int((row["horas"] - h_int) * 60)
+                    st.write(f"**{row['empresa']}** | {row['data']} | {h_int}h {m_int:02d}min | R$ {row['valor']:.2f}")
+                with col2:
+                    if st.button("editar", key=f"edit_h_{i}"):
+                        st.session_state[f"editar_h_{i}"] = True
+                with col3:
+                    if st.button("apagar", key=f"del_h_{i}"):
+                        horas = horas.drop(i).reset_index(drop=True)
+                        salvar_csv_github(horas, "horas.csv")
+                        st.toast("Registro apagado!", icon="🗑️")
+                        st.rerun()
+
+            if st.session_state.get(f"editar_h_{i}"):
+                with st.form(key=f"form_h_{i}"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        novo_inicio = st.time_input("Inicio", value=time(7, 0))
+                    with col2:
+                        novo_fim = st.time_input("Fim", value=time(17, 0))
+                    if st.form_submit_button("Salvar edicao"):
+                        if novo_fim <= novo_inicio:
+                            st.error("Hora fim deve ser maior que inicio")
+                        else:
+                            data_row = datetime.strptime(row["data"], "%d/%m/%Y").date()
+                            diff = datetime.combine(data_row, novo_fim) - datetime.combine(data_row, novo_inicio)
+                            novas_horas = diff.seconds / 3600
+                            valor_hora = emp.loc[emp["empresa"] == row["empresa"], "valor_hora"].values[0]
+                            horas.at[i, "horas"] = novas_horas
+                            horas.at[i, "valor"] = novas_horas * valor_hora
+                            salvar_csv_github(horas, "horas.csv")
+                            del st.session_state[f"editar_h_{i}"]
+                            st.toast("Horas atualizadas!", icon="✅")
+                            st.rerun()
+
+    st.markdown("---")
+    st.subheader("Historico cobrado")
+    if cobradas.empty:
+        st.info("Nenhum historico")
+    else:
         st.dataframe(cobradas, use_container_width=True)
