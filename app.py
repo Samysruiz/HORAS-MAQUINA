@@ -56,7 +56,14 @@ def get_logo():
             return base64.b64encode(f.read()).decode()
     except:
         return ""
+LOGO_B64 = get_logo()
 
+r_teste = requests.get(
+    f"https://api.github.com/repos/{GITHUB_REPO}/contents/LOGO.png?ref={BRANCH}",
+    headers={"Authorization": f"token {GITHUB_TOKEN}"}
+)
+st.write(r_teste.status_code)
+st.write(r_teste.json())
 LOGO_B64 = get_logo()
 
 def show_logo(width=220, center=False):
